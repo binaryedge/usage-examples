@@ -20,9 +20,11 @@ parsed_response = json.loads(response.text)
 for entry in parsed_response:
     ip_set |= IPSet(entry['as_prefixes'])
 
+# get from firehose endpoint (streaming endpoint, hence stream=True)
 response = requests.get('https://api.binaryedge.io/v1/firehose',
                         headers={'X-Token': BE_TOKEN}, stream=True)
 
+# for each event, check the IP address and check if it matches our list
 for line in response.iter_lines():
     parsed_line = json.loads(line)
     if parsed_line['target']['ip'] in ip_set:
